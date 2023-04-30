@@ -1,0 +1,30 @@
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+server:
+  port: 2115
+spring:
+  application:
+    name: transactions
+  config:
+    import: optional:configserver:http://localhost:8888
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/transactions
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+secret:
+  api:
+    key: "${FINHUB_API_KEY:ch79iihr01qt83gc52kgch79iihr01qt83gc52l0}"
+

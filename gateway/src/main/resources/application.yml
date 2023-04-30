@@ -1,0 +1,20 @@
+eureka:
+  client:
+    register-with-eureka: false
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: transactions
+          uri: http://localhost:2115
+          predicates:
+            - Path=/api/v1/transactions/**
+  config:
+    import: optional:configserver:http://localhost:8888
+
