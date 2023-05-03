@@ -15,6 +15,10 @@ spring:
           uri: http://localhost:2115
           predicates:
             - Path=/api/v1/transactions/**
+        - id: users
+          uri: http://localhost:2116
+          predicates:
+            - Path=/api/v1/users/**
   config:
     import: optional:configserver:http://localhost:8888
 

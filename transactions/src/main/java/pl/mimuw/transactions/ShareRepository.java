@@ -7,5 +7,5 @@ import pl.mimuw.transactions.models.Share;
 @Repository
 public interface ShareRepository extends JpaRepository<Share, Long> {
 
-    Share findByShareholderIdAndTicker(Long shareholderId, String ticker);
+    Share findByShareholderNameAndTicker(String shareholderName, String ticker);
 }

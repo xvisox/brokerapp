@@ -18,7 +18,7 @@ public class Share {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private Long shareholderId;
+    private String shareholderName;
     private String ticker;
     private Integer amount;
 }

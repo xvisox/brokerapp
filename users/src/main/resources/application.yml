@@ -6,15 +6,15 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
 
 server:
-  port: 2115
+  port: 2116
 spring:
   application:
-    name: transactions
+    name: users
   config:
     import: optional:configserver:http://localhost:8888
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/transactions
+    url: jdbc:postgresql://localhost:5432/users
     username: postgres
     password: postgres
   jpa:
@@ -24,10 +24,6 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-secret:
-  api:
-    key: "${FINHUB_API_KEY:ch79iihr01qt83gc52kgch79iihr01qt83gc52l0}"
-
-application:
-  config:
-    users-url: http://localhost:2116/api/v1/users
+jwt:
+  secret: secret
+  expiration: 86400000
