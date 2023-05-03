@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import static pl.mimuw.users.Utility.*;
+
 @RestController
 @RequestMapping("api/v1/users")
 @Data
@@ -13,13 +15,15 @@ public class UserController {
     private final JwtService jwtService;
     private final UserService userService;
 
+    /* Endpoints exposed to the client */
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@Validated @RequestBody UserDto user) {
         try {
             userService.addUser(user);
-            return ResponseEntity.ok("User registered");
+            return ResponseEntity.ok(toResponse(Utility.MESSAGE, "User registered"));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(toResponse(MESSAGE, e.getMessage()));
         }
     }
 
@@ -28,11 +32,23 @@ public class UserController {
         try {
             User foundUser = userService.findUserByCredentials(user.getUsername(), user.getPassword());
             String token = jwtService.createToken(foundUser.getUsername());
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(toResponse(TOKEN, token));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(toResponse(MESSAGE, e.getMessage()));
         }
     }
+
+    @GetMapping("/balance")
+    public ResponseEntity<?> getBalance(@RequestHeader("Authorization") String token) {
+        try {
+            String username = jwtService.validateTokenAndGetUsername(token.substring(7));
+            return ResponseEntity.ok(toResponse(BALANCE, userService.getBalance(username)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(toResponse(MESSAGE, e.getMessage()));
+        }
+    }
+
+    /* Endpoints exposed to the other services */
 
     @GetMapping("/validate/{token}")
     public ResponseEntity<?> validate(@PathVariable String token) {

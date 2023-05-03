@@ -7,6 +7,25 @@ spring:
     name: gateway
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+              - Cache-Control
+              - X-Requested-With
+              - accept
+              - Origin
+              - Access-Control-Request-Method
+              - Access-Control-Request-Headers
+            maxAge: 3600
       discovery:
         locator:
           enabled: true
