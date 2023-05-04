@@ -90,7 +90,7 @@ public class TransactionsService {
     }
 
     private String getMessage(String action, Integer amount, Double stockPrice) {
-        return "%s %d stocks for %s $".formatted(action, amount, stockPrice * amount);
+        return "%s %d stocks for %s $".formatted(action, amount, String.format("%.2f", stockPrice * amount));
     }
 
     private String validateAndGetUsername(String token) throws RuntimeException {

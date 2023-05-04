@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import pl.mimuw.transactions.payload.BuyStockDto;
 import pl.mimuw.transactions.payload.SellStockDto;
 
+import static pl.mimuw.transactions.Utility.MESSAGE;
+import static pl.mimuw.transactions.Utility.toResponse;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/transactions")
@@ -17,9 +20,9 @@ public class TransactionsController {
                                        @RequestHeader("Authorization") String token) {
         try {
             String message = transactionsService.buyStocks(buyStockDto, token);
-            return ResponseEntity.ok(message);
+            return ResponseEntity.ok(toResponse(MESSAGE, message));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(toResponse(MESSAGE, e.getMessage()));
         }
     }
 
@@ -28,9 +31,9 @@ public class TransactionsController {
                                         @RequestHeader("Authorization") String token) {
         try {
             String message = transactionsService.sellStocks(sellStockDto, token);
-            return ResponseEntity.ok(message);
+            return ResponseEntity.ok(toResponse(MESSAGE, message));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(toResponse(MESSAGE, e.getMessage()));
         }
     }
 }
