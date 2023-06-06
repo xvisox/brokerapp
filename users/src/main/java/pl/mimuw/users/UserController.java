@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static pl.mimuw.users.Utility.*;
 
 @RestController
@@ -43,6 +45,21 @@ public class UserController {
         try {
             String username = jwtService.validateTokenAndGetUsername(token.substring(7));
             return ResponseEntity.ok(toResponse(BALANCE, userService.getBalance(username)));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(toResponse(MESSAGE, e.getMessage()));
+        }
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String token) {
+        try {
+            String username = jwtService.validateTokenAndGetUsername(token.substring(7));
+            return ResponseEntity.ok(
+                    toResponse(
+                            List.of(USERNAME, BALANCE),
+                            List.of(username, userService.getBalance(username))
+                    )
+            );
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(toResponse(MESSAGE, e.getMessage()));
         }
