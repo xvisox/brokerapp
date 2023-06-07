@@ -34,6 +34,10 @@ public class UserService {
     public Double getBalance(String username) {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return user.getBalance();
+        return roundBalance(user.getBalance());
+    }
+
+    private Double roundBalance(Double balance) {
+        return Math.round(balance * 100.0) / 100.0;
     }
 }
