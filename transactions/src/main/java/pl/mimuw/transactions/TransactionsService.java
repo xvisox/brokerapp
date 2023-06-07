@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import pl.mimuw.transactions.clients.UsersClient;
+import pl.mimuw.transactions.exceptions.InvalidBalanceException;
 import pl.mimuw.transactions.exceptions.InvalidSharesAmountException;
 import pl.mimuw.transactions.exceptions.InvalidTickerException;
 import pl.mimuw.transactions.models.Share;
@@ -15,7 +16,6 @@ import pl.mimuw.transactions.payload.*;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
 @Service
@@ -33,7 +33,12 @@ public class TransactionsService {
         String username = validateAndGetUsername(token);
         Double stockPrice = getRequestedStockPrice(buyStockDto.getTicker());
         // Update user's wallet, this will throw an exception if user doesn't have enough money.
-        usersClient.decreaseBalance(username, stockPrice * buyStockDto.getAmount());
+        try {
+            usersClient.decreaseBalance(username, stockPrice * buyStockDto.getAmount());
+        } catch (Exception e) {
+            throw new InvalidBalanceException("Not enough money");
+        }
+//        usersClient.decreaseBalance(username, stockPrice * buyStockDto.getAmount());
 
         // Aggregate shares with the same ticker and shareholderId.
         Share share = getShare(username, buyStockDto.getTicker());
@@ -65,8 +70,13 @@ public class TransactionsService {
         usersClient.increaseBalance(username, stockPrice * sellStockDto.getAmount());
 
         // Sell stocks.
-        share.setAmount(share.getAmount() - sellStockDto.getAmount());
-        shareRepo.save(share);
+        int remainingAmount = share.getAmount() - sellStockDto.getAmount();
+        if (remainingAmount == 0) {
+            shareRepo.delete(share);
+        } else {
+            share.setAmount(remainingAmount);
+            shareRepo.save(share);
+        }
 
         // TODO: asynchronously update user's transactions history
         return getMessage("Sold", sellStockDto.getAmount(), stockPrice);
@@ -86,10 +96,10 @@ public class TransactionsService {
         return quoteDataDto.getC();
     }
 
-    public Set<PortfolioItemDto> getPortfolio(String token) throws RuntimeException {
+    public List<PortfolioItemDto> getPortfolio(String token) throws RuntimeException {
         String username = validateAndGetUsername(token);
         List<Share> ownedShares = getOwnedShares(username);
-        return PortfolioItemDtoMapper.mapShareListToPortfolioItemDtoSet(ownedShares);
+        return PortfolioItemDtoMapper.mapShareListToPortfolioItemDtoList(ownedShares);
     }
 
     private List<Share> getOwnedShares(String shareholderName) {

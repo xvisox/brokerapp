@@ -6,8 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.mimuw.transactions.payload.BuyStockDto;
 import pl.mimuw.transactions.payload.SellStockDto;
 
-import static pl.mimuw.transactions.Utility.MESSAGE;
-import static pl.mimuw.transactions.Utility.toResponse;
+import static pl.mimuw.transactions.Utility.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,9 +39,9 @@ public class TransactionsController {
     @GetMapping("/portfolio")
     public ResponseEntity<?> getPortfolio(@RequestHeader("Authorization") String token) {
         try {
-            return ResponseEntity.ok(transactionsService.getPortfolio(token));
+            return ResponseEntity.ok(toResponse(PORTFOLIO, transactionsService.getPortfolio(token))) ;
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(toResponse(MESSAGE, e.getMessage()));
         }
     }
 }
