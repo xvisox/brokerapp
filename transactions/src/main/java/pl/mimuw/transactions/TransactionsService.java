@@ -38,7 +38,6 @@ public class TransactionsService {
         } catch (Exception e) {
             throw new InvalidBalanceException("Not enough money");
         }
-//        usersClient.decreaseBalance(username, stockPrice * buyStockDto.getAmount());
 
         // Aggregate shares with the same ticker and shareholderId.
         Share share = getShare(username, buyStockDto.getTicker());
