@@ -11,10 +11,11 @@ import pl.mimuw.transactions.clients.UsersClient;
 import pl.mimuw.transactions.exceptions.InvalidSharesAmountException;
 import pl.mimuw.transactions.exceptions.InvalidTickerException;
 import pl.mimuw.transactions.models.Share;
-import pl.mimuw.transactions.payload.QuoteDataDto;
-import pl.mimuw.transactions.payload.BuyStockDto;
-import pl.mimuw.transactions.payload.SellStockDto;
+import pl.mimuw.transactions.payload.*;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Set;
 
 @Data
 @Service
@@ -85,6 +86,16 @@ public class TransactionsService {
         return quoteDataDto.getC();
     }
 
+    public Set<PortfolioItemDto> getPortfolio(String token) throws RuntimeException {
+        String username = validateAndGetUsername(token);
+        List<Share> ownedShares = getOwnedShares(username);
+        return PortfolioItemDtoMapper.mapShareListToPortfolioItemDtoSet(ownedShares);
+    }
+
+    private List<Share> getOwnedShares(String shareholderName) {
+        return shareRepo.findByShareholderName(shareholderName);
+    }
+
     private Share getShare(String shareholderName, String ticker) {
         return shareRepo.findByShareholderNameAndTicker(shareholderName, ticker);
     }
@@ -95,7 +106,7 @@ public class TransactionsService {
 
     private String validateAndGetUsername(String token) throws RuntimeException {
         if (token == null || !token.startsWith("Bearer ")) {
-            throw new RuntimeException("Not token provided");
+            throw new RuntimeException("No token provided");
         }
         try {
             ResponseEntity<String> response = usersClient.validate(token.substring(7));

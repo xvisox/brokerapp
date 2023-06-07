@@ -36,4 +36,13 @@ public class TransactionsController {
             return ResponseEntity.badRequest().body(toResponse(MESSAGE, e.getMessage()));
         }
     }
+
+    @GetMapping("/portfolio")
+    public ResponseEntity<?> getPortfolio(@RequestHeader("Authorization") String token) {
+        try {
+            return ResponseEntity.ok(transactionsService.getPortfolio(token));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
