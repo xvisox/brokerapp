@@ -20,7 +20,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public void updateBalance(String username, Double amount) {
+    public Double updateBalance(String username, Double amount) {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -29,6 +29,7 @@ public class UserService {
         }
         user.setBalance(user.getBalance() + amount);
         userRepository.save(user);
+        return roundBalance(user.getBalance());
     }
 
     public Double getBalance(String username) {

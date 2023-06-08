@@ -80,8 +80,8 @@ public class UserController {
     @GetMapping("/{username}/balance/{amount}/increase")
     public ResponseEntity<?> increaseBalance(@PathVariable String username, @PathVariable Double amount) {
         try {
-            userService.updateBalance(username, amount);
-            return ResponseEntity.ok("Balance updated");
+            Double remainingBalance = userService.updateBalance(username, amount);
+            return ResponseEntity.ok(remainingBalance);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -90,8 +90,8 @@ public class UserController {
     @GetMapping("/{username}/balance/{amount}/decrease")
     public ResponseEntity<?> decreaseBalance(@PathVariable String username, @PathVariable Double amount) {
         try {
-            userService.updateBalance(username, -amount);
-            return ResponseEntity.ok("Balance updated");
+            Double remainingBalance = userService.updateBalance(username, -amount);
+            return ResponseEntity.ok(remainingBalance);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

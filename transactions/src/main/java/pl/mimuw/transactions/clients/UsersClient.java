@@ -12,8 +12,8 @@ public interface UsersClient {
     ResponseEntity<String> validate(@PathVariable String token);
 
     @GetMapping("/{username}/balance/{amount}/increase")
-    ResponseEntity<String> increaseBalance(@PathVariable String username, @PathVariable Double amount);
+    ResponseEntity<Double> increaseBalance(@PathVariable String username, @PathVariable Double amount);
 
     @GetMapping("/{username}/balance/{amount}/decrease")
-    ResponseEntity<String> decreaseBalance(@PathVariable String username, @PathVariable Double amount);
+    ResponseEntity<Double> decreaseBalance(@PathVariable String username, @PathVariable Double amount);
 }
