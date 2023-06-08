@@ -65,6 +65,7 @@ public class TransactionsService {
                 .shareholderName(username)
                 .ticker(buyStockDto.getTicker())
                 .amount(buyStockDto.getAmount())
+                .stockPrice(stockPrice)
                 .totalValue(totalValue)
                 .remainingBalance(remainingBalance)
                 .build();
@@ -103,6 +104,7 @@ public class TransactionsService {
                 .shareholderName(username)
                 .ticker(sellStockDto.getTicker())
                 .amount(sellStockDto.getAmount())
+                .stockPrice(stockPrice)
                 .totalValue(totalValue)
                 .remainingBalance(remainingBalance)
                 .build();

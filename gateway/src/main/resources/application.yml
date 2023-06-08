@@ -38,6 +38,10 @@ spring:
           uri: http://localhost:2116
           predicates:
             - Path=/api/v1/users/**
+        - id: history
+          uri: http://localhost:2117
+          predicates:
+            - Path=/api/v1/history/**
   config:
     import: optional:configserver:http://localhost:8888
 

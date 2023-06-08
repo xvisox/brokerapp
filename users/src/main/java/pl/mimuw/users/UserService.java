@@ -29,16 +29,12 @@ public class UserService {
         }
         user.setBalance(user.getBalance() + amount);
         userRepository.save(user);
-        return roundBalance(user.getBalance());
+        return user.getBalance();
     }
 
     public Double getBalance(String username) {
         User user = userRepository.findById(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return roundBalance(user.getBalance());
-    }
-
-    private Double roundBalance(Double balance) {
-        return Math.round(balance * 100.0) / 100.0;
+        return user.getBalance();
     }
 }

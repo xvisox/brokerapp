@@ -28,6 +28,8 @@ spring:
       bootstrap-servers: http://localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: 'transactionDto:pl.mimuw.transactions.payload.TransactionDto'
 
 secret:
   api:
