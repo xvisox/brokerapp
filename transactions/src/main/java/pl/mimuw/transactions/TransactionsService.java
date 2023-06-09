@@ -11,10 +11,12 @@ import pl.mimuw.transactions.clients.UsersClient;
 import pl.mimuw.transactions.exceptions.InvalidBalanceException;
 import pl.mimuw.transactions.exceptions.InvalidSharesAmountException;
 import pl.mimuw.transactions.exceptions.InvalidTickerException;
+import pl.mimuw.transactions.kafka.KafkaHistoryProducer;
 import pl.mimuw.transactions.models.Share;
 import pl.mimuw.transactions.payload.*;
 import reactor.core.publisher.Mono;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -24,6 +26,7 @@ public class TransactionsService {
     private final WebClient finhubClient;
     private final UsersClient usersClient;
     private final ShareRepository shareRepo;
+    private final KafkaHistoryProducer kafkaHistoryProducer;
 
     @Value("${secret.api.key}")
     private String token;
@@ -33,8 +36,11 @@ public class TransactionsService {
         String username = validateAndGetUsername(token);
         Double stockPrice = getRequestedStockPrice(buyStockDto.getTicker());
         // Update user's wallet, this will throw an exception if user doesn't have enough money.
+        Double remainingBalance;
+        Double totalValue = stockPrice * buyStockDto.getAmount();
         try {
-            usersClient.decreaseBalance(username, stockPrice * buyStockDto.getAmount());
+            ResponseEntity<Double> response = usersClient.decreaseBalance(username, totalValue);
+            remainingBalance = response.getBody();
         } catch (Exception e) {
             throw new InvalidBalanceException("Not enough money");
         }
@@ -52,7 +58,19 @@ public class TransactionsService {
         }
         shareRepo.save(share);
 
-        // TODO: asynchronously update user's transactions history
+        // Asynchronously update user's transactions history
+        TransactionDto transactionDto = TransactionDto.builder()
+                .date(new Date())
+                .type(TransactionType.BUY)
+                .shareholderName(username)
+                .ticker(buyStockDto.getTicker())
+                .amount(buyStockDto.getAmount())
+                .stockPrice(stockPrice)
+                .totalValue(totalValue)
+                .remainingBalance(remainingBalance)
+                .build();
+        kafkaHistoryProducer.sendTransactionData(transactionDto);
+
         return getMessage("Bought", buyStockDto.getAmount(), stockPrice);
     }
 
@@ -66,7 +84,9 @@ public class TransactionsService {
 
         // Update user's wallet.
         Double stockPrice = getRequestedStockPrice(sellStockDto.getTicker());
-        usersClient.increaseBalance(username, stockPrice * sellStockDto.getAmount());
+        Double totalValue = stockPrice * sellStockDto.getAmount();
+        ResponseEntity<Double> response = usersClient.increaseBalance(username, totalValue);
+        Double remainingBalance = response.getBody();
 
         // Sell stocks.
         int remainingAmount = share.getAmount() - sellStockDto.getAmount();
@@ -77,7 +97,19 @@ public class TransactionsService {
             shareRepo.save(share);
         }
 
-        // TODO: asynchronously update user's transactions history
+        // Asynchronously update user's transactions history
+        TransactionDto transactionDto = TransactionDto.builder()
+                .date(new Date())
+                .type(TransactionType.SELL)
+                .shareholderName(username)
+                .ticker(sellStockDto.getTicker())
+                .amount(sellStockDto.getAmount())
+                .stockPrice(stockPrice)
+                .totalValue(totalValue)
+                .remainingBalance(remainingBalance)
+                .build();
+        kafkaHistoryProducer.sendTransactionData(transactionDto);
+
         return getMessage("Sold", sellStockDto.getAmount(), stockPrice);
     }
 
