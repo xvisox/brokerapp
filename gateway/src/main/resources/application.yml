@@ -29,17 +29,17 @@ spring:
       discovery:
         locator:
           enabled: true
-      routes:
+      routes: # FIXME: environment variables
         - id: transactions
-          uri: http://localhost:2115
+          uri: http://transactions:2115
           predicates:
             - Path=/api/v1/transactions/**
         - id: users
-          uri: http://localhost:2116
+          uri: http://users:2116
           predicates:
             - Path=/api/v1/users/**
         - id: history
-          uri: http://localhost:2117
+          uri: http://history:2117
           predicates:
             - Path=/api/v1/history/**
   config:

@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  users:
+    image: xvisox/brokerapp-users:latest
+    ports:
+      - "2116:2116"
+    environment:
+      - SERVER_PORT=2116
+      - POSTGRES_HOST=psql-server
+      - POSTGRES_USER=brokerapp
+      - POSTGRES_PASSWORD=brokerapp
+      - POSTGRES_DB=brokerapp
+    depends_on:
+      - psql-server
+
+  transactions:
+    image: xvisox/brokerapp-transactions:latest
+    ports:
+      - "2115:2115"
+    environment:
+      - SERVER_PORT=2115
+      - POSTGRES_HOST=psql-server
+      - POSTGRES_USER=brokerapp
+      - POSTGRES_PASSWORD=brokerapp
+      - POSTGRES_DB=brokerapp
+      - KAFKA_HOST=kafka-cluster
+      - KAFKA_PORT=9094
+      - USERS_HOST=users
+      - USERS_PORT=2116
+    depends_on:
+      - psql-server
+      - kafka-cluster
+      - users
+
+  history:
+    image: xvisox/brokerapp-history:latest
+    ports:
+      - "2117:2117"
+    environment:
+      - SERVER_PORT=2117
+      - POSTGRES_HOST=psql-server
+      - POSTGRES_USER=brokerapp
+      - POSTGRES_PASSWORD=brokerapp
+      - POSTGRES_DB=brokerapp
+      - KAFKA_HOST=kafka-cluster
+      - KAFKA_PORT=9094
+      - USERS_HOST=users
+      - USERS_PORT=2116
+    depends_on:
+      - psql-server
+      - kafka-cluster
+      - users
+
+  gateway:
+    image: xvisox/brokerapp-gateway:latest
+    ports:
+      - "8080:8080" # FIXME: might need to change this port
+
+  psql-server:
+    image: postgres:15.2
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=brokerapp
+      - POSTGRES_USER=brokerapp
+      - POSTGRES_DB=brokerapp
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+
+  kafka-cluster:
+    image: wurstmeister/kafka
+    ports:
+      - "9094:9094"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://:9094,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://:9094,PLAINTEXT_HOST://localhost:9092

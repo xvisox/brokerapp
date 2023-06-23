@@ -14,9 +14,9 @@ spring:
     import: optional:configserver:http://localhost:8888
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/transactions
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:transactions}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
   jpa:
     hibernate:
       ddl-auto: create
@@ -25,11 +25,11 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   kafka:
     producer:
-      bootstrap-servers: http://localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.type.mapping: 'transactionDto:pl.mimuw.transactions.payload.TransactionDto'
+    bootstrap-servers: http://${KAFKA_HOST:localhost}:${KAFKA_PORT:9092}
 
 secret:
   api:
@@ -37,4 +37,4 @@ secret:
 
 application:
   config:
-    users-url: http://localhost:2116/api/v1/users
+    users-url: http://${USERS_HOST:localhost}:${USERS_PORT:2116}/api/v1/users

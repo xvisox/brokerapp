@@ -14,9 +14,9 @@ spring:
     import: optional:configserver:http://localhost:8888
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/history
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:history}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
   jpa:
     hibernate:
       ddl-auto: create
@@ -25,7 +25,7 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   kafka:
     consumer:
-      bootstrap-servers: https://localhost:9092
+      bootstrap-servers: http://${KAFKA_HOST:localhost}:${KAFKA_PORT:9093}
       group-id: historyConsumers
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -36,5 +36,5 @@ spring:
 
 application:
   config:
-    users-url: http://localhost:2116/api/v1/users
+    users-url: http://${USERS_HOST:localhost}:${USERS_PORT:2116}/api/v1/users
 
