@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: psql-server
+  name: psql-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: psql-server
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: psql-server
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_DB
+              value: brokerapp
+            - name: POSTGRES_PASSWORD
+              value: brokerapp
+            - name: POSTGRES_USER
+              value: brokerapp
+          image: postgres:15.2
+          name: psql-server
+          ports:
+            - containerPort: 5432
+          resources: {}
+      restartPolicy: Always
+status: {}

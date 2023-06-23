@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: transactions
+  name: transactions
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: transactions
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: transactions
+    spec:
+      containers:
+        - env:
+            - name: KAFKA_HOST
+              value: kafka-cluster
+            - name: KAFKA_PORT
+              value: "9092"
+            - name: POSTGRES_DB
+              value: brokerapp
+            - name: POSTGRES_HOST
+              value: psql-server
+            - name: POSTGRES_PASSWORD
+              value: brokerapp
+            - name: POSTGRES_USER
+              value: brokerapp
+            - name: SERVER_PORT
+              value: "2115"
+            - name: USERS_HOST
+              value: users
+            - name: USERS_PORT
+              value: "2116"
+          image: xvisox/brokerapp-transactions:latest
+          name: transactions
+          ports:
+            - containerPort: 2115
+          resources: {}
+      restartPolicy: Always
+status: {}

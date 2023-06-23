@@ -25,7 +25,7 @@ services:
       - POSTGRES_PASSWORD=brokerapp
       - POSTGRES_DB=brokerapp
       - KAFKA_HOST=kafka-cluster
-      - KAFKA_PORT=9094
+      - KAFKA_PORT=9092
       - USERS_HOST=users
       - USERS_PORT=2116
     depends_on:
@@ -44,7 +44,7 @@ services:
       - POSTGRES_PASSWORD=brokerapp
       - POSTGRES_DB=brokerapp
       - KAFKA_HOST=kafka-cluster
-      - KAFKA_PORT=9094
+      - KAFKA_PORT=9092
       - USERS_HOST=users
       - USERS_PORT=2116
     depends_on:
@@ -55,7 +55,7 @@ services:
   gateway:
     image: xvisox/brokerapp-gateway:latest
     ports:
-      - "8080:8080" # FIXME: might need to change this port
+      - "8080:8080" # FIXME: might need to change this port to $PORT from GCP
 
   psql-server:
     image: postgres:15.2
@@ -66,18 +66,10 @@ services:
       - POSTGRES_USER=brokerapp
       - POSTGRES_DB=brokerapp
 
-  zookeeper:
-    image: wurstmeister/zookeeper
-    ports:
-      - "2181:2181"
-
   kafka-cluster:
-    image: wurstmeister/kafka
+    image: moeenz/docker-kafka-kraft:latest
+    restart: always
     ports:
-      - "9094:9094"
+      - "9092:9092"
     environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENERS: PLAINTEXT://:9094,PLAINTEXT_HOST://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://:9094,PLAINTEXT_HOST://localhost:9092
+      - KRAFT_CONTAINER_HOST_NAME=kafka-cluster

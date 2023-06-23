@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: kafka-cluster
+  name: kafka-cluster
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: kafka-cluster
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.26.0 (40646f47)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: kafka-cluster
+    spec:
+      containers:
+        - env:
+            - name: KRAFT_CONTAINER_HOST_NAME
+              value: kafka-cluster
+          image: moeenz/docker-kafka-kraft:latest
+          name: kafka-cluster
+          ports:
+            - containerPort: 9092
+          resources: {}
+      restartPolicy: Always
+status: {}

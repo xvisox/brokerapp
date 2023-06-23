@@ -25,7 +25,6 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   kafka:
     consumer:
-      bootstrap-servers: http://${KAFKA_HOST:localhost}:${KAFKA_PORT:9093}
       group-id: historyConsumers
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
@@ -33,6 +32,7 @@ spring:
       properties:
         spring.json.trusted.packages: '*'
         spring.json.type.mapping: 'transactionDto:pl.mimuw.history.payload.TransactionDto'
+    bootstrap-servers: http://${KAFKA_HOST:localhost}:${KAFKA_PORT:9092}
 
 application:
   config:
