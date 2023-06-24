@@ -31,6 +31,14 @@ spec:
           name: kafka-cluster
           ports:
             - containerPort: 9092
-          resources: {}
+          resources:
+            limits:
+              cpu: 750m
+              ephemeral-storage: 2Gi
+              memory: 4Gi
+            requests:
+              cpu: 750m
+              ephemeral-storage: 2Gi
+              memory: 4Gi
       restartPolicy: Always
 status: {}
