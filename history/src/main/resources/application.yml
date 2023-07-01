@@ -37,4 +37,3 @@ spring:
 application:
   config:
     users-url: http://${USERS_HOST:localhost}:${USERS_PORT:2116}/api/v1/users
-

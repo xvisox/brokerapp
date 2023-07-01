@@ -29,7 +29,7 @@ spring:
       discovery:
         locator:
           enabled: true
-      routes: # FIXME: environment variables
+      routes: # FIXME: this code only works for docker-compose and k8s, not for local development
         - id: transactions
           uri: http://transactions:2115
           predicates:
@@ -44,4 +44,3 @@ spring:
             - Path=/api/v1/history/**
   config:
     import: optional:configserver:http://localhost:8888
-

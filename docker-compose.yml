@@ -55,7 +55,7 @@ services:
   gateway:
     image: xvisox/brokerapp-gateway:latest
     ports:
-      - "8080:8080" # FIXME: might need to change this port to $PORT from GCP
+      - "8080:8080"
 
   psql-server:
     image: postgres:15.2
